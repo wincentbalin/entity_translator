@@ -1,0 +1,5 @@
+# Ignore language data
+data/
+
+# Ignore server starter for Windows
+server.bat
