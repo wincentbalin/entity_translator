@@ -1,4 +1,7 @@
 (function() {
+    //
+    // TODO: Check for fetch API, promises, IndexedDB support
+    //
     var downloadFile = function(url) {
         return new Promise(async function(resolve, reject) {
             /*
