@@ -100,6 +100,8 @@
                 fillAvailableLanguages1BySize(languages);
                 break;
         }
+
+        emptyElement(document.querySelector('#availableLanguageTo'));
     }
 
     /*
