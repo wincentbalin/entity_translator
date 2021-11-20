@@ -54,7 +54,6 @@
     }
 
     // Download translations manifest and fill list of language pairs
-    //document.querySelector('#progressAction').textContent = 'Getting list of languages…';
     downloadFile('data/manifest.min.json').then(function(data) {
         let manifest = JSON.parse(data);
         let languagesFrom = Object.keys(manifest);
@@ -66,21 +65,9 @@
             languageElement.textContent = lang;
             languagesElement.appendChild(languageElement);
         });
-        /*
-        languagesFrom.forEach(function(languageFrom) {
-            let languagesTo = Object.keys(manifest[languageFrom].files);
-            languagesTo.forEach(function(languageTo) {
-                let languageElement = document.createElement('option');
-                if (languageTo in manifest && languageFrom in manifest[languageTo].files) {
-                    languageElement.textContent = `${languageFrom}-${languageTo}, ${languageTo}-${languageFrom}`;
-                } else {
-                    languageElement.textContent = value = `${languageFrom}-${languageTo}`;
-                }
-                availableLanguages.appendChild(languageElement);
-            });
-        });
-        */
     });
+
+
 
     /*
     if (!window.indexedDB) {
