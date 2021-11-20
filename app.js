@@ -126,12 +126,16 @@
         exchangeButton.disabled = !exchangedLanguagePairAvailable;
     }
 
+    function makeUrl(fn) {
+        return ['data', fn].join('/');
+    }
+
     /*
      * Initialisation of the app.
      */
 
     // Download language manifest and fill list of language pairs
-    downloadFile('data/manifest.min.json', 'Getting list of languages…').then(function(data) {
+    downloadFile(makeUrl('manifest.min.json'), 'Getting list of languages…').then(function(data) {
         manifest = JSON.parse(data);
         let languagesFromElement = document.querySelector('#availableLanguageFrom');
         fillAvailableLanguagesSorted(languagesFromElement, Object.keys(manifest));
