@@ -188,6 +188,27 @@
         availableLanguage2.value = targetLanguage;
     });
 
+    // Add handler to language pair installation button
+    document.querySelector('#addAvailableLanguagePair').addEventListener('click', function(event) {
+        let sourceLanguage = document.querySelector('#availableLanguageFrom').value,
+            targetLanguage = document.querySelector('#availableLanguageTo').value;
+
+        let fileNames = manifest[sourceLanguage].files[targetLanguage];
+
+        fileNames.map(makeUrl).forEach(function(url, index) {
+            let message = `➕ ${sourceLanguage}➡${targetLanguage} [${index+1}/${fileNames.length}]`;
+            downloadFile(url, message).then(function(data) {
+                //if (index < fileNames.length-1) return;
+                data.split(/\r?\n/).forEach(function(line) {
+                    let pair = line.split(/\t/),
+                        term = pair[0],
+                        words = term.split(/\s/);
+                    console.log(words);
+                });
+            });
+        });
+    });
+
     /*
     if (!window.indexedDB) {
         console.error('IndexedDB is not supported!');
