@@ -108,6 +108,18 @@
         fillAvailableLanguagesSorted(availableLanguage2, targetLanguages);
     }
 
+    function updateExchangeAvailableLanguagesButtonState() {
+        let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
+            availableLanguage2 = document.querySelector('#availableLanguageTo'),
+            exchangeButton = document.querySelector('#exchangeAvailableLanguagePair');
+
+        let sourceLanguage = availableLanguage1.value,
+            targetLanguage = availableLanguage2.value;
+
+        let exchangedLanguagePairAvailable = targetLanguage in manifest && sourceLanguage in manifest[targetLanguage].files;
+        exchangeButton.disabled = !exchangedLanguagePairAvailable;
+    }
+
     /*
      * Initialisation of the app.
      */
@@ -141,6 +153,25 @@
     // Add handler to available source language select
     document.querySelector('#availableLanguageFrom').addEventListener('change', function(event) {
         fillAvailableTargetLanguages();
+    });
+
+    // Add handler to available target language select
+    document.querySelector('#availableLanguageTo').addEventListener('change', function(event) {
+        updateExchangeAvailableLanguagesButtonState();
+    });
+
+    // Add handler to exchange button for available languages
+    document.querySelector('#exchangeAvailableLanguagePair').addEventListener('click', function(event) {
+        let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
+            availableLanguage2 = document.querySelector('#availableLanguageTo');
+
+        // The languages are exchanged here!
+        let sourceLanguage = availableLanguage2.value,
+            targetLanguage = availableLanguage1.value;
+
+        availableLanguage1.value = sourceLanguage;
+        fillAvailableTargetLanguages();
+        availableLanguage2.value = targetLanguage;
     });
 
     /*
