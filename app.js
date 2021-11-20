@@ -105,25 +105,25 @@
     }
 
     function fillAvailableTargetLanguages() {
-        let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
-            availableLanguage2 = document.querySelector('#availableLanguageTo');
+        let sourceLanguageElement = document.querySelector('#availableLanguageFrom'),
+            targetLanguageElement = document.querySelector('#availableLanguageTo');
 
-        let sourceLanguage = availableLanguage1.value;
+        let sourceLanguage = sourceLanguageElement.value;
         let targetLanguages = sourceLanguage in manifest ? Object.keys(manifest[sourceLanguage].files) : [];
 
-        fillAvailableLanguagesSorted(availableLanguage2, targetLanguages);
+        fillAvailableLanguagesSorted(targetLanguageElement, targetLanguages);
     }
 
     function updateExchangeAvailableLanguagesButtonState() {
-        let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
-            availableLanguage2 = document.querySelector('#availableLanguageTo'),
-            exchangeButton = document.querySelector('#exchangeAvailableLanguagePair');
+        let sourceLanguageElement = document.querySelector('#availableLanguageFrom'),
+            targetLanguageElement = document.querySelector('#availableLanguageTo'),
+            exchangeLanguagesButton = document.querySelector('#exchangeAvailableLanguagePair');
 
-        let sourceLanguage = availableLanguage1.value,
-            targetLanguage = availableLanguage2.value;
+        let sourceLanguage = sourceLanguageElement.value,
+            targetLanguage = targetLanguageElement.value;
 
         let exchangedLanguagePairAvailable = targetLanguage in manifest && sourceLanguage in manifest[targetLanguage].files;
-        exchangeButton.disabled = !exchangedLanguagePairAvailable;
+        exchangeLanguagesButton.disabled = !exchangedLanguagePairAvailable;
     }
 
     function makeUrl(fn) {
@@ -149,18 +149,18 @@
     // Add handler to sort-by radio buttons
     document.querySelectorAll('input[name="sortBy"]').forEach(function(element) {
         element.addEventListener('change', function(event) {
-            let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
-                availableLanguage2 = document.querySelector('#availableLanguageTo');
+            let sourceLanguageElement = document.querySelector('#availableLanguageFrom'),
+                targetLanguageElement = document.querySelector('#availableLanguageTo');
 
-            let sourceLanguage = availableLanguage1.value,
-                targetLanguage = availableLanguage2.value;
+            let sourceLanguage = sourceLanguageElement.value,
+                targetLanguage = targetLanguageElement.value;
 
-            fillAvailableLanguagesSorted(availableLanguage1, Object.keys(manifest));
-            availableLanguage1.value = sourceLanguage;
+            fillAvailableLanguagesSorted(sourceLanguageElement, Object.keys(manifest));
+            sourceLanguageElement.value = sourceLanguage;
 
             let targetLanguages = sourceLanguage in manifest ? Object.keys(manifest[sourceLanguage].files) : [];
-            fillAvailableLanguagesSorted(availableLanguage2, targetLanguages);
-            availableLanguage2.value = targetLanguage;
+            fillAvailableLanguagesSorted(targetLanguageElement, targetLanguages);
+            targetLanguageElement.value = targetLanguage;
         });
     });
 
@@ -176,16 +176,16 @@
 
     // Add handler to exchange button for available languages
     document.querySelector('#exchangeAvailableLanguagePair').addEventListener('click', function(event) {
-        let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
-            availableLanguage2 = document.querySelector('#availableLanguageTo');
+        let sourceLanguageElement = document.querySelector('#availableLanguageFrom'),
+            targetLanguageElement = document.querySelector('#availableLanguageTo');
 
         // The languages are exchanged here!
-        let sourceLanguage = availableLanguage2.value,
-            targetLanguage = availableLanguage1.value;
+        let sourceLanguage = targetLanguageElement.value,
+            targetLanguage = sourceLanguageElement.value;
 
-        availableLanguage1.value = sourceLanguage;
+        sourceLanguageElement.value = sourceLanguage;
         fillAvailableTargetLanguages();
-        availableLanguage2.value = targetLanguage;
+        targetLanguageElement.value = targetLanguage;
     });
 
     // Add handler to language pair installation button
