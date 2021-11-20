@@ -27,6 +27,12 @@
             * Large part of this function was taken from https://javascript.info/fetch-progress
             */
             let response = await fetch(url);
+
+            if (response.status !== 200 && response.status !== 304) {
+                reject(`Could not download file ${url}`);
+                return;
+            }
+
             const reader = response.body.getReader();
 
             const contentLength = +response.headers.get('Content-Length');
