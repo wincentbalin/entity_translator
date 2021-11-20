@@ -65,6 +65,34 @@
         }
     }
 
+    function fillAvailableLanguages(parentElement, languages) {
+        emptyElement(parentElement);
+
+        languages.forEach(function(language) {
+            let languageElement = document.createElement('option');
+            languageElement.textContent = language;
+            parentElement.appendChild(languageElement);
+        });
+    }
+
+    function fillAvailableLanguagesByAlpha(parentElement, languages) {
+        languages.sort();
+        fillAvailableLanguages(parentElement, languages);
+    }
+
+    function fillAvailableLanguagesBySize(parentElement, languages) {
+        languages.sort(compareLanguagesBySize);
+        fillAvailableLanguages(parentElement, languages);
+    }
+
+    function fillAvailableLanguagesSorted(parentElement, languages) {
+        switch (document.querySelector('input[name="sortBy"]:checked').value) {
+            case 'alpha': fillAvailableLanguagesByAlpha(parentElement, languages); break;
+            case 'size':  fillAvailableLanguagesBySize(parentElement, languages);  break;
+        }
+    }
+
+    /*
     function fillAvailableLanguages1(languages) {
         let availableLanguages1 = document.querySelector('#availableLanguageFrom');
         emptyElement(availableLanguages1);
@@ -80,11 +108,25 @@
         languages.sort();
         fillAvailableLanguages1(languages);
     }
+    */
 
     function compareLanguagesBySize(el1, el2) {
-        return manifest[el2].size - manifest[el1].size;
+        let size1 = el1 in manifest ? manifest[el1].size : 0,
+            size2 = el2 in manifest ? manifest[el2].size : 0;
+        return size2 - size1;
     }
 
+    function fillAvailableTargetLanguages() {
+        let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
+            availableLanguage2 = document.querySelector('#availableLanguageTo');
+
+        let sourceLanguage = availableLanguage1.value;
+        let targetLanguages = sourceLanguage in manifest ? Object.keys(manifest[sourceLanguage].files) : [];
+
+        fillAvailableLanguagesSorted(availableLanguage2, targetLanguages);
+    }
+
+    /*
     function fillAvailableLanguages1BySize(languages) {
         languages.sort(compareLanguagesBySize);
         fillAvailableLanguages1(languages);
@@ -100,9 +142,8 @@
                 fillAvailableLanguages1BySize(languages);
                 break;
         }
-
-        emptyElement(document.querySelector('#availableLanguageTo'));
     }
+    */
 
     /*
      * Initialisation of the app.
@@ -111,14 +152,32 @@
     // Download language manifest and fill list of language pairs
     downloadFile('data/manifest.min.json').then(function(data) {
         manifest = JSON.parse(data);
-        fillAvailableLanguages1Sorted(Object.keys(manifest));
+        let languagesFromElement = document.querySelector('#availableLanguageFrom');
+        fillAvailableLanguagesSorted(languagesFromElement, Object.keys(manifest));
+        fillAvailableTargetLanguages();
     });
     
-    // Add listeners for sort-by radio buttons
+    // Add handler to sort-by radio buttons
     document.querySelectorAll('input[name="sortBy"]').forEach(function(element) {
         element.addEventListener('change', function(event) {
-            fillAvailableLanguages1Sorted(Object.keys(manifest));
+            let availableLanguage1 = document.querySelector('#availableLanguageFrom'),
+                availableLanguage2 = document.querySelector('#availableLanguageTo');
+
+            let sourceLanguage = availableLanguage1.value,
+                targetLanguage = availableLanguage2.value;
+
+            fillAvailableLanguagesSorted(availableLanguage1, Object.keys(manifest));
+            availableLanguage1.value = sourceLanguage;
+
+            let targetLanguages = sourceLanguage in manifest ? Object.keys(manifest[sourceLanguage].files) : [];
+            fillAvailableLanguagesSorted(availableLanguage2, targetLanguages);
+            availableLanguage2.value = targetLanguage;
         });
+    });
+
+    // Add handler to available source language select
+    document.querySelector('#availableLanguageFrom').addEventListener('change', function(event) {
+        fillAvailableTargetLanguages();
     });
 
     /*
