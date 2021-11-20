@@ -92,24 +92,6 @@
         }
     }
 
-    /*
-    function fillAvailableLanguages1(languages) {
-        let availableLanguages1 = document.querySelector('#availableLanguageFrom');
-        emptyElement(availableLanguages1);
-
-        languages.forEach(function(language) {
-            let languageElement = document.createElement('option');
-            languageElement.textContent = language;
-            availableLanguages1.appendChild(languageElement);
-        });
-    }
-
-    function fillAvailableLanguages1ByAlpha(languages) {
-        languages.sort();
-        fillAvailableLanguages1(languages);
-    }
-    */
-
     function compareLanguagesBySize(el1, el2) {
         let size1 = el1 in manifest ? manifest[el1].size : 0,
             size2 = el2 in manifest ? manifest[el2].size : 0;
@@ -125,25 +107,6 @@
 
         fillAvailableLanguagesSorted(availableLanguage2, targetLanguages);
     }
-
-    /*
-    function fillAvailableLanguages1BySize(languages) {
-        languages.sort(compareLanguagesBySize);
-        fillAvailableLanguages1(languages);
-    }
-
-    function fillAvailableLanguages1Sorted(languages) {
-        switch (document.querySelector('input[name="sortBy"]:checked').value) {
-            case 'alpha':
-                fillAvailableLanguages1ByAlpha(languages);
-                break;
-
-            case 'size':
-                fillAvailableLanguages1BySize(languages);
-                break;
-        }
-    }
-    */
 
     /*
      * Initialisation of the app.
