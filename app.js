@@ -43,10 +43,24 @@
         });
     }
 
-    downloadFile('data/manifest.min.json').then(function(result) {
-        console.log(result.length);
-        var json = JSON.parse(result);
-        console.log(json);
+    // Download translations manifest and fill list of language pairs
+    downloadFile('data/manifest.min.json').then(function(data) {
+        let manifest = JSON.parse(data);
+        let availableLanguages = document.querySelector('#availableLanguages');
+
+        let languagesFrom = Object.keys(manifest);
+        languagesFrom.forEach(function(languageFrom) {
+            let languagesTo = Object.keys(manifest[languageFrom].files);
+            languagesTo.forEach(function(languageTo) {
+                let languageElement = document.createElement('option');
+                if (languageTo in manifest && languageFrom in manifest[languageTo].files) {
+                    languageElement.textContent = `${languageFrom}-${languageTo}, ${languageTo}-${languageFrom}`;
+                } else {
+                    languageElement.textContent = value = `${languageFrom}-${languageTo}`;
+                }
+                availableLanguages.appendChild(languageElement);
+            });
+        });
     });
 
     /*
