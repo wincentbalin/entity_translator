@@ -2,9 +2,17 @@
     //
     // TODO: Check for fetch API, promises, IndexedDB support
     //
-    function updatePercentage(value, total) {
-        var percentage = `${(value / total * 100).toFixed()} %`;
-        document.querySelector('#progressValue').textContent = percentage;
+    function updateProgressScreen(action, total) {
+        document.querySelector('#progressScreen > h1').textContent = action;
+        document.querySelector('#progressScreen > progress').max = total;
+    }
+
+    function updatePercentage(value) {
+        var progressElement = document.querySelector('#progressScreen > progress'),
+            total = progressElement.max,
+            percentage = `${(value / total * 100).toFixed()} %`;
+        progressElement.value = value;
+        document.querySelector('#progressScreen > label').textContent = percentage;
     }
 
     function downloadFile(url) {
@@ -16,10 +24,7 @@
             const reader = response.body.getReader();
 
             const contentLength = +response.headers.get('Content-Length');
-
-            let progress = document.querySelector('#progress');
-            progress.value = 0;
-            progress.max = contentLength;
+            updateProgressScreen('Getting list of languages…', contentLength);
 
             let receivedLength = 0;
             let chunks = [];
@@ -33,8 +38,7 @@
 
                 chunks.push(value);
                 receivedLength += value.length;
-                progress.value = receivedLength;
-                updatePercentage(receivedLength, contentLength);
+                updatePercentage(receivedLength);
             }
 
             let chunksAll = new Uint8Array(receivedLength);
@@ -50,11 +54,19 @@
     }
 
     // Download translations manifest and fill list of language pairs
+    //document.querySelector('#progressAction').textContent = 'Getting list of languages…';
     downloadFile('data/manifest.min.json').then(function(data) {
         let manifest = JSON.parse(data);
-        let availableLanguages = document.querySelector('#availableLanguages');
-
         let languagesFrom = Object.keys(manifest);
+        languagesFrom.sort();
+
+        let languagesElement = document.querySelector('#availableLanguageFrom');
+        languagesFrom.forEach(function(lang) {
+            let languageElement = document.createElement('option');
+            languageElement.textContent = lang;
+            languagesElement.appendChild(languageElement);
+        });
+        /*
         languagesFrom.forEach(function(languageFrom) {
             let languagesTo = Object.keys(manifest[languageFrom].files);
             languagesTo.forEach(function(languageTo) {
@@ -67,6 +79,7 @@
                 availableLanguages.appendChild(languageElement);
             });
         });
+        */
     });
 
     /*
