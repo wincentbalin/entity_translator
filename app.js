@@ -21,7 +21,7 @@
         document.querySelector('#progressScreen > label').textContent = percentage;
     }
 
-    function downloadFile(url) {
+    function downloadFile(url, message) {
         return new Promise(async function(resolve, reject) {
             /*
             * Large part of this function was taken from https://javascript.info/fetch-progress
@@ -30,7 +30,7 @@
             const reader = response.body.getReader();
 
             const contentLength = +response.headers.get('Content-Length');
-            updateProgressScreen('Getting list of languages…', contentLength);
+            updateProgressScreen(message, contentLength);
 
             let receivedLength = 0;
             let chunks = [];
@@ -125,7 +125,7 @@
      */
 
     // Download language manifest and fill list of language pairs
-    downloadFile('data/manifest.min.json').then(function(data) {
+    downloadFile('data/manifest.min.json', 'Getting list of languages…').then(function(data) {
         manifest = JSON.parse(data);
         let languagesFromElement = document.querySelector('#availableLanguageFrom');
         fillAvailableLanguagesSorted(languagesFromElement, Object.keys(manifest));
