@@ -2,6 +2,11 @@
     //
     // TODO: Check for fetch API, promises, IndexedDB support
     //
+    /*
+     * This is manifest data with all metadata.
+     */
+    var manifest = {};
+
     function updateProgressScreen(action, total) {
         document.querySelector('#progressScreen > h1').textContent = action;
         document.querySelector('#progressScreen > progress').max = total;
@@ -55,10 +60,14 @@
 
     // Download translations manifest and fill list of language pairs
     downloadFile('data/manifest.min.json').then(function(data) {
-        let manifest = JSON.parse(data);
+        // Initialise language manifest
+        manifest = JSON.parse(data);
+
+        // Get languages to translate from
         let languagesFrom = Object.keys(manifest);
         languagesFrom.sort();
 
+        // Fill first language element
         let languagesElement = document.querySelector('#availableLanguageFrom');
         languagesFrom.forEach(function(lang) {
             let languageElement = document.createElement('option');
