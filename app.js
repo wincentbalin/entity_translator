@@ -2,6 +2,7 @@
     //
     // TODO: Check for fetch API, promises, IndexedDB support
     //
+
     /*
      * This is manifest data with all metadata.
      */
@@ -58,25 +59,65 @@
         });
     }
 
+    function emptyElement(element) {
+        while(element.firstChild) {
+            element.remove(element.lastChild);
+        }
+    }
+
+    function fillAvailableLanguages1(languages) {
+        let availableLanguages1 = document.querySelector('#availableLanguageFrom');
+        emptyElement(availableLanguages1);
+
+        languages.forEach(function(language) {
+            let languageElement = document.createElement('option');
+            languageElement.textContent = language;
+            availableLanguages1.appendChild(languageElement);
+        });
+    }
+
+    function fillAvailableLanguages1ByAlpha(languages) {
+        languages.sort();
+        fillAvailableLanguages1(languages);
+    }
+
+    function compareLanguagesBySize(el1, el2) {
+        return manifest[el2].size - manifest[el1].size;
+    }
+
+    function fillAvailableLanguages1BySize(languages) {
+        languages.sort(compareLanguagesBySize);
+        fillAvailableLanguages1(languages);
+    }
+
+    function fillAvailableLanguages1Sorted(languages) {
+        switch (document.querySelector('input[name="sortBy"]:checked').value) {
+            case 'alpha':
+                fillAvailableLanguages1ByAlpha(languages);
+                break;
+
+            case 'size':
+                fillAvailableLanguages1BySize(languages);
+                break;
+        }
+    }
+
+    /*
+     * Initialisation of the app.
+     */
+
     // Download language manifest and fill list of language pairs
     downloadFile('data/manifest.min.json').then(function(data) {
-        // Initialise language manifest
         manifest = JSON.parse(data);
-
-        // Get languages to translate from
-        let languagesFrom = Object.keys(manifest);
-        languagesFrom.sort();
-
-        // Fill first language element
-        let languagesElement = document.querySelector('#availableLanguageFrom');
-        languagesFrom.forEach(function(lang) {
-            let languageElement = document.createElement('option');
-            languageElement.textContent = lang;
-            languagesElement.appendChild(languageElement);
+        fillAvailableLanguages1Sorted(Object.keys(manifest));
+    });
+    
+    // Add listeners for sort-by radio buttons
+    document.querySelectorAll('input[name="sortBy"]').forEach(function(element) {
+        element.addEventListener('change', function(event) {
+            fillAvailableLanguages1Sorted(Object.keys(manifest));
         });
     });
-
-
 
     /*
     if (!window.indexedDB) {
