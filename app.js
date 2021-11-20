@@ -2,7 +2,12 @@
     //
     // TODO: Check for fetch API, promises, IndexedDB support
     //
-    var downloadFile = function(url) {
+    function updatePercentage(value, total) {
+        var percentage = `${(value / total * 100).toFixed()} %`;
+        document.querySelector('#progressValue').textContent = percentage;
+    }
+
+    function downloadFile(url) {
         return new Promise(async function(resolve, reject) {
             /*
             * Large part of this function was taken from https://javascript.info/fetch-progress
@@ -29,6 +34,7 @@
                 chunks.push(value);
                 receivedLength += value.length;
                 progress.value = receivedLength;
+                updatePercentage(receivedLength, contentLength);
             }
 
             let chunksAll = new Uint8Array(receivedLength);
