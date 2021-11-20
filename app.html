@@ -7,9 +7,16 @@
     <title>Entity translator</title>
 </head>
 <body>
-    <progress id="progress"></progress>
-    <select id="availableLanguages"></select>
-    <button id="addLanguagePair">➕</button>
+    <section id="progressScreen">
+        <h1 id="progressAction"></h1>
+        <progress id="progress"></progress>
+        <br>
+        <label id="progressValue"></label>
+    </section>
+    <section id="addLanguageScreen">
+        <select id="availableLanguages"></select>
+        <button id="addLanguagePair">➕</button>
+    </section>
     <script src="bloomfilter.js"></script>
     <script src="dexie.js"></script>
     <script src="app.js"></script>
