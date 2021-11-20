@@ -58,7 +58,7 @@
         });
     }
 
-    // Download translations manifest and fill list of language pairs
+    // Download language manifest and fill list of language pairs
     downloadFile('data/manifest.min.json').then(function(data) {
         // Initialise language manifest
         manifest = JSON.parse(data);
