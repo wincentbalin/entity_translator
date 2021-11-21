@@ -347,7 +347,7 @@
                             });
                         }
 
-                        // Add to Bllom filter
+                        // Add to Bloom filter
                         bloomFilter.add(word);
                     });
                 });
