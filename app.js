@@ -7,6 +7,7 @@
      * This is manifest data with all metadata.
      */
     var manifest = {},
+        installed = {},
         settings = new Dexie('et_settings');
 
     function updateProgressScreen(action, total) {
@@ -138,6 +139,64 @@
             .replace(/[\p{P}]/gu, ' ');  // all Unicode punctuation (SO:4328500)
     }
 
+    function updateExchangeLanguagesButtonState() {
+        let sourceLanguageElement = document.querySelector('#languageFrom'),
+            targetLanguageElement = document.querySelector('#languageTo'),
+            exchangeLanguagesButton = document.querySelector('#exchangeLanguagePair');
+
+        let sourceLanguage = sourceLanguageElement.value,
+            targetLanguage = targetLanguageElement.value;
+
+        let exchangedLanguagePairAvailable = targetLanguage in installed && sourceLanguage in installed[targetLanguage];
+        exchangeLanguagesButton.disabled = !exchangedLanguagePairAvailable;
+    }
+
+    function fillInstalledTargetLanguages() {
+        let sourceLanguageElement = document.querySelector('#languageFrom'),
+            targetLanguageElement = document.querySelector('#languageTo');
+
+        let sourceLanguage = sourceLanguageElement.value;
+        let targetLanguages = sourceLanguage in installed ? Object.keys(installed[sourceLanguage]) : [];
+
+        fillLanguagesByAlpha(targetLanguageElement, targetLanguages);
+    }
+
+    function updateInstalledLanguages() {
+        settings.languages.toArray(function(languages) {
+            installed = {};
+            languages.forEach(function(entry) {
+                let sourceLanguage = entry.source,
+                    targetLanguage = entry.target;
+
+                if (sourceLanguage in installed) {
+                    installed[sourceLanguage][targetLanguage] = true;
+                } else {
+                    let targetLanguages = {};
+                    targetLanguages[targetLanguage] = true;
+                    installed[sourceLanguage] = targetLanguages;
+                }
+            });
+
+            let sourceLanguageElement = document.querySelector('#languageFrom'),
+                targetLanguageElement = document.querySelector('#languageTo');
+
+            let sourceLanguage = sourceLanguageElement.value,
+                targetLanguage = targetLanguageElement.value;
+
+            let sourceLanguages = Object.keys(installed);
+            fillLanguagesByAlpha(sourceLanguageElement, sourceLanguages);
+            if (sourceLanguage in installed) {
+                sourceLanguageElement.value = sourceLanguage;
+            }
+            fillInstalledTargetLanguages();
+            if (sourceLanguage in installed && targetLanguage in installed[sourceLanguage]) {
+                targetLanguageElement.value = targetLanguage;
+            }
+
+            updateExchangeLanguagesButtonState();
+        });
+    }
+
     /*
      * Initialisation of the app.
      */
@@ -146,6 +205,7 @@
     settings.version(1).stores({
         languages: '[source+target]'
     });
+    updateInstalledLanguages();
 
     // Download language manifest and fill list of language pairs
     downloadFile(makeUrl('manifest.min.json'), 'Getting list of languages…').then(function(data) {
@@ -237,8 +297,34 @@
             settings.languages.put({
                 source: sourceLanguage,
                 target: targetLanguage
-            });    
+            });
+
+            updateInstalledLanguages();
         }
+    });
+
+    // Add handler to installed source language select
+    document.querySelector('#languageFrom').addEventListener('change', function(event) {
+        fillInstalledTargetLanguages();
+    });
+
+    // Add handler to available target language select
+    document.querySelector('#languageTo').addEventListener('change', function(event) {
+        updateExchangeLanguagesButtonState();
+    });
+
+    // Add handler to exchange button for installed languages
+    document.querySelector('#exchangeLanguagePair').addEventListener('click', function(event) {
+        let sourceLanguageElement = document.querySelector('#languageFrom'),
+            targetLanguageElement = document.querySelector('#languageTo');
+
+        // The languages are exchanged here!
+        let sourceLanguage = targetLanguageElement.value,
+            targetLanguage = sourceLanguageElement.value;
+
+        sourceLanguageElement.value = sourceLanguage;
+        fillInstalledTargetLanguages();
+        targetLanguageElement.value = targetLanguage;
     });
 
     /*
