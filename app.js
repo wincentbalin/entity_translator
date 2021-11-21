@@ -130,8 +130,11 @@
         return ['data', fn].join('/');
     }
 
-    function removeDiacritics(str) {
-        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    function cleanText(str) {
+        return str
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')  // diacritics (here and above SO:990904)
+            .replace(/[\p{P}]/gu, ' ');  // all Unicode punctuation (SO:4328500)
     }
 
     /*
@@ -199,11 +202,12 @@
             let message = `➕ ${sourceLanguage}➡${targetLanguage} [${index+1}/${fileNames.length}]`;
             downloadFile(url, message).then(function(data) {
                 //if (index < fileNames.length-1) return;
-                data.split(/\r?\n/).forEach(function(line) {
+                data.split(/\r?\n/).forEach(function(line, index) {
                     let pair = line.split(/\t/),
                         term = pair[0],
-                        words = term.split(/\s/);
-                    console.log(words);
+                        translation = pair[1],
+                        words = cleanText(term).split(/\s+/).filter(Boolean);
+                    //console.log(words);
                 });
             });
         });
