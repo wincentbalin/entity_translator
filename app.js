@@ -335,6 +335,16 @@
                         translation = pair[1],
                         words = cleanText(term).split(/\s+/).filter(Boolean);
                     //console.log(words);
+                    words.forEach(function(word) {
+                        // Count characters
+                        word.split('').forEach(function(char) {
+                            if (char in alphabet) {
+                                alphabet[char]++;
+                            } else {
+                                alphabet[char] = 1;
+                            }
+                        })
+                    });
                 });
 
                 index++;
@@ -346,8 +356,9 @@
             });
         })(0);
 
-
         function finaliseTranslations() {
+            console.log('Alphabet:', alphabet);
+
             settings.languages.put({
                 source: sourceLanguage,
                 target: targetLanguage
