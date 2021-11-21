@@ -356,8 +356,24 @@
         })(0);
 
         function finaliseTranslations() {
+            // Prune alphabet
+            Object.keys(alphabet).forEach(function(char) {
+                if (alphabet[char] < 10) {
+                    delete alphabet[char];
+                }
+            });
             console.log('Alphabet:', alphabet);
+            // Store alphabet
+            fts.alphabet.bulkPut(Object.keys(alphabet).map(function(char) {
+                return {char: char, count: alphabet[char]};
+            }));
+            // Store Bloom filter
+            fts.bloomFilter.put({
+                id: 0,
+                json: JSON.stringify([].slice.call(bloomFilter.buckets))
+            });
 
+            // Add language pair to installed
             settings.languages.put({
                 source: sourceLanguage,
                 target: targetLanguage
