@@ -325,6 +325,7 @@
 
         let bloomFilter = new BloomFilter(32 * 1046576, 22);
         let alphabet = {};
+        let languageModel = {};
 
         (function downloadTranslations(index) {
             let url = makeUrl(fileNames[index]);
@@ -336,16 +337,67 @@
                 console.log(`Lines: ${lines.length}`);
                 let message = `📖 ${sourceLanguage}➡${targetLanguage} [${index+1}/${fileNames.length}]`;
                 updateProgressScreen(message, lines.length);
-                lines.forEach(function(line, index) {
-                    updatePercentage(index);
-                    let pair = line.split(/\t/),
-                        term = pair[0],
-                        translation = pair[1],
-                        words = cleanText(term).split(/\s+/).filter(Boolean);
-                    //console.log(words);
-                    words.forEach(function(word) {
-                        // Count characters
-                        if (word.length >= 3) {
+                fts.transaction('rw', fts.terms, fts.words, fts.term_words, function() {
+                    lines.forEach(function(line, index) {
+                        updatePercentage(index);
+                        let pair = line.split(/\t/),
+                            term = pair[0],
+                            translation = pair[1],
+                            words = cleanText(term).split(/\s+/).filter(Boolean);
+
+                        // Store term with translation and get its ID
+                        fts.terms.add({
+                            term: term,
+                            translation: translation
+                        }).then(function(term_id) {
+                            words.forEach(function(word) {
+                                /*
+                                fts.words.get({word: word}).then(function(wordData) {
+                                    if (typeof wordData === 'undefined') {
+                                        fts.words.put({
+                                            word: word,
+                                            count: 1
+                                        }).then(function(word_id) {
+                                            fts.term_words.add({
+                                                word_id: word_id,
+                                                term_id: term_id
+                                            });
+                                        })
+                                    } else {
+                                        wordData.count++;
+                                        fts.term_words.put({
+                                            word_id: wordData.id,
+                                            term_id: term_id
+                                        });
+                                    }
+                                })
+                                */
+                                /*
+                                // Get word ID
+                                if (bloomFilter.test(word) && word in languageModel) {
+                                    //
+                                } else {
+                                    //fts.words.add()
+                                }
+
+                                // Add word to language model
+                                if (word in languageModel) {
+                                    languageModel[word]++;
+                                } else {
+                                    languageModel[word] = 1;
+                                }
+                                */
+
+                                // Add to Bloom filter
+                                bloomFilter.add(word);
+                            });
+                        });
+
+                        // Update alphabet
+                        words.filter(function(word) {
+                            return word.length >= 3;
+                        }).forEach(function(word) {
+                            // Count characters
                             word.split('').forEach(function(char) {
                                 if (char in alphabet) {
                                     alphabet[char]++;
@@ -353,19 +405,16 @@
                                     alphabet[char] = 1;
                                 }
                             });
-                        }
-
-                        // Add to Bloom filter
-                        bloomFilter.add(word);
+                        });
                     });
+                }).then(function() {
+                    index++;
+                    if (index < fileNames.length) {
+                        downloadTranslations(index);
+                    } else {
+                        finaliseTranslations();
+                    }
                 });
-
-                index++;
-                if (index < fileNames.length) {
-                    downloadTranslations(index);
-                } else {
-                    finaliseTranslations();
-                }
             });
         })(0);
 
