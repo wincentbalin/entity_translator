@@ -161,6 +161,43 @@
         fillLanguagesByAlpha(targetLanguageElement, targetLanguages);
     }
 
+    function removeLanguagePair(event) {
+        let button = event.target;
+        let pair = button.parentElement.firstChild.textContent.split('➡');
+        
+        // TODO: Remove installed language pair database
+
+        settings.languages.delete(pair);
+        updateInstalledLanguages();
+    }
+
+    function fillInstalledLanguagesList() {
+        let installedLanguagesElement = document.querySelector('#removeLanguageScreen > ul');
+        if (installedLanguagesElement.firstElementChild) {
+            emptyElement(installedLanguagesElement);
+        }
+
+        let sourceLanguages = Object.keys(installed);
+        sourceLanguages.sort();
+
+        sourceLanguages.forEach(function(sourceLanguage) {
+            let targetLanguages = Object.keys(installed[sourceLanguage]);
+            targetLanguages.sort();
+
+            targetLanguages.forEach(function(targetLanguage) {
+                let entryElement = document.createElement('li');
+                let textElement = document.createElement('span');
+                textElement.textContent = `${sourceLanguage}➡${targetLanguage}`;
+                entryElement.appendChild(textElement);
+                let buttonElement = document.createElement('button');
+                buttonElement.textContent = '➖';
+                buttonElement.addEventListener('click', removeLanguagePair);
+                entryElement.appendChild(buttonElement);
+                installedLanguagesElement.appendChild(entryElement);
+            });
+        });
+    }
+
     function updateInstalledLanguages() {
         settings.languages.toArray(function(languages) {
             installed = {};
@@ -194,6 +231,7 @@
             }
 
             updateExchangeLanguagesButtonState();
+            fillInstalledLanguagesList();
         });
     }
 
