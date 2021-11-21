@@ -72,7 +72,7 @@
         }
     }
 
-    function fillAvailableLanguages(parentElement, languages) {
+    function fillLanguages(parentElement, languages) {
         emptyElement(parentElement);
 
         languages.forEach(function(language) {
@@ -82,20 +82,20 @@
         });
     }
 
-    function fillAvailableLanguagesByAlpha(parentElement, languages) {
+    function fillLanguagesByAlpha(parentElement, languages) {
         languages.sort();
-        fillAvailableLanguages(parentElement, languages);
+        fillLanguages(parentElement, languages);
     }
 
-    function fillAvailableLanguagesBySize(parentElement, languages) {
+    function fillLanguagesBySize(parentElement, languages) {
         languages.sort(compareLanguagesBySize);
-        fillAvailableLanguages(parentElement, languages);
+        fillLanguages(parentElement, languages);
     }
 
     function fillAvailableLanguagesSorted(parentElement, languages) {
         switch (document.querySelector('input[name="sortBy"]:checked').value) {
-            case 'alpha': fillAvailableLanguagesByAlpha(parentElement, languages); break;
-            case 'size':  fillAvailableLanguagesBySize(parentElement, languages);  break;
+            case 'alpha': fillLanguagesByAlpha(parentElement, languages); break;
+            case 'size':  fillLanguagesBySize(parentElement, languages);  break;
         }
     }
 
