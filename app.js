@@ -202,7 +202,7 @@
             let message = `➕ ${sourceLanguage}➡${targetLanguage} [${index+1}/${fileNames.length}]`;
             downloadFile(url, message).then(function(data) {
                 //if (index < fileNames.length-1) return;
-                data.split(/\r?\n/).forEach(function(line, index) {
+                data.split(/\r?\n/).forEach(function(line) {
                     let pair = line.split(/\t/),
                         term = pair[0],
                         translation = pair[1],
