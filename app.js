@@ -14,6 +14,7 @@
     function updateProgressScreen(action, total) {
         document.querySelector('#progressScreen > h1').textContent = action;
         document.querySelector('#progressScreen > progress').max = total;
+        updatePercentage(0);
     }
 
     function updatePercentage(value) {
