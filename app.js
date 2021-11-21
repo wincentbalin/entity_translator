@@ -239,6 +239,13 @@
         });
     }
 
+    function unique(arr) {  // from SO:11688692
+        var seen = {};
+        return arr.filter(function(value) {
+            return seen[value] = !seen.hasOwnProperty(value);
+        });
+    }
+
     /*
      * Initialisation of the app.
      */
