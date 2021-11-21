@@ -136,7 +136,8 @@
         return str
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')  // diacritics (here and above SO:990904)
-            .replace(/[\p{P}]/gu, ' ');  // all Unicode punctuation (SO:4328500)
+            .replace(/[\p{P}]/gu, ' ')  // all Unicode punctuation (SO:4328500)
+            .toLowerCase();
     }
 
     function updateExchangeLanguagesButtonState() {
