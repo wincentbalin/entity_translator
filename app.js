@@ -250,7 +250,7 @@
      * Initialisation of the app.
      */
 
-    // Intialise settings database
+    // Initialise settings database
     settings.version(1).stores({
         languages: '[source+target]'
     });
