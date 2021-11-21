@@ -167,7 +167,8 @@
         let button = event.target;
         let pair = button.parentElement.firstChild.textContent.split('➡');
         
-        // TODO: Remove installed language pair database
+        let ftsName = `et_${pair.join('_')}`;
+        Dexie.delete(ftsName);
 
         settings.languages.delete(pair);
         updateInstalledLanguages();
