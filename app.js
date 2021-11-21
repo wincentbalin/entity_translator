@@ -6,7 +6,8 @@
     /*
      * This is manifest data with all metadata.
      */
-    var manifest = {};
+    var manifest = {},
+        settings = new Dexie('et_settings');
 
     function updateProgressScreen(action, total) {
         document.querySelector('#progressScreen > h1').textContent = action;
@@ -141,6 +142,11 @@
      * Initialisation of the app.
      */
 
+    // Intialise settings database
+    settings.version(1).stores({
+        languages: '[source+target]'
+    });
+
     // Download language manifest and fill list of language pairs
     downloadFile(makeUrl('manifest.min.json'), 'Getting list of languages…').then(function(data) {
         manifest = JSON.parse(data);
@@ -210,6 +216,11 @@
                     //console.log(words);
                 });
             });
+        });
+
+        settings.languages.add({
+            source: sourceLanguage,
+            target: targetLanguage
         });
     });
 
