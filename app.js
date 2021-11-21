@@ -204,24 +204,41 @@
 
         let fileNames = manifest[sourceLanguage].files[targetLanguage];
 
-        fileNames.map(makeUrl).forEach(function(url, index) {
+        (function downloadTranslations(index) {
+            let url = makeUrl(fileNames[index]);
             let message = `➕ ${sourceLanguage}➡${targetLanguage} [${index+1}/${fileNames.length}]`;
+
             downloadFile(url, message).then(function(data) {
                 //if (index < fileNames.length-1) return;
-                data.split(/\r?\n/).forEach(function(line) {
+                let lines = data.split(/\r?\n/);
+                console.log(`Lines: ${lines.length}`);
+                let message = `📖 ${sourceLanguage}➡${targetLanguage} [${index+1}/${fileNames.length}]`;
+                updateProgressScreen(message, lines.length);
+                lines.forEach(function(line, index) {
+                    updatePercentage(index);
                     let pair = line.split(/\t/),
                         term = pair[0],
                         translation = pair[1],
                         words = cleanText(term).split(/\s+/).filter(Boolean);
                     //console.log(words);
                 });
-            });
-        });
 
-        settings.languages.add({
-            source: sourceLanguage,
-            target: targetLanguage
-        });
+                index++;
+                if (index < fileNames.length) {
+                    downloadTranslations(index);
+                } else {
+                    finaliseTranslations();
+                }
+            });
+        })(0);
+
+
+        function finaliseTranslations() {
+            settings.languages.put({
+                source: sourceLanguage,
+                target: targetLanguage
+            });    
+        }
     });
 
     /*
