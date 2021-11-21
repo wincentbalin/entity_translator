@@ -69,7 +69,7 @@
 
     function emptyElement(element) {
         while(element.firstChild) {
-            element.remove(element.lastChild);
+            element.removeChild(element.lastChild);
         }
     }
 
