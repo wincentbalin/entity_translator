@@ -8,7 +8,8 @@
      */
     var manifest = {},
         installed = {},
-        settings = new Dexie('et_settings');
+        settings = new Dexie('et_settings'),
+        fts;
 
     function updateProgressScreen(action, total) {
         document.querySelector('#progressScreen > h1').textContent = action;
@@ -302,6 +303,20 @@
             targetLanguage = document.querySelector('#availableLanguageTo').value;
 
         let fileNames = manifest[sourceLanguage].files[targetLanguage];
+
+        let ftsName = `et_${sourceLanguage}_${targetLanguage}`;
+        fts = new Dexie(ftsName);
+        fts.version(1).stores({
+            bloomFilter: 'id',
+            words: '++id, word',
+            bigrams: '++id, word_id1, word_id2',
+            terms: '++id',
+            term_bigrams: 'bigram_id',
+            alphabet: '++id'
+        });
+
+        let bloomFilter = new BloomFilter(32 * 1046576, 22);
+        let alphabet = {};
 
         (function downloadTranslations(index) {
             let url = makeUrl(fileNames[index]);
