@@ -337,13 +337,18 @@
                     //console.log(words);
                     words.forEach(function(word) {
                         // Count characters
-                        word.split('').forEach(function(char) {
-                            if (char in alphabet) {
-                                alphabet[char]++;
-                            } else {
-                                alphabet[char] = 1;
-                            }
-                        })
+                        if (word.length >= 3) {
+                            word.split('').forEach(function(char) {
+                                if (char in alphabet) {
+                                    alphabet[char]++;
+                                } else {
+                                    alphabet[char] = 1;
+                                }
+                            });
+                        }
+
+                        // Add to Bllom filter
+                        bloomFilter.add(word);
                     });
                 });
 
