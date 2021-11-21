@@ -308,11 +308,10 @@
         fts = new Dexie(ftsName);
         fts.version(1).stores({
             bloomFilter: 'id',
-            words: '++id, word',
-            bigrams: '++id, word_id1, word_id2',
+            words: '++id, &word',
             terms: '++id',
-            term_bigrams: 'bigram_id',
-            alphabet: '++id'
+            term_words: 'word_id, term_id',
+            alphabet: '&char'
         });
 
         let bloomFilter = new BloomFilter(32 * 1046576, 22);
