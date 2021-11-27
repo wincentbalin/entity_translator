@@ -3,6 +3,8 @@
     // TODO: Check for fetch API, promises, IndexedDB support
     //
 
+// Here we end ES5 implementation
+return;
     /*
      * This is manifest data with all metadata.
      */
