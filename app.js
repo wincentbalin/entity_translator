@@ -40,6 +40,7 @@
      * Show error.
      */
     var showError = function(errorMessage) {
+        console.error(errorMessage);
         document.querySelector('#errorMessage').textContent = errorMessage;
         window.location.hash = '#error';
     };
