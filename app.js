@@ -169,6 +169,14 @@
     });
 
     /*
+     * Update available target language upon selection of available source language.
+     */
+    document.querySelector('#availableSourceLanguage').onclick = function(event) {
+        var targetLanguageElement = document.querySelector('#availableTargetLanguage');
+        updateAvailableTargetLanguagesElement(event.target, targetLanguageElement);
+    };
+
+    /*
      * Load manifest.
      */
     loadFile('data/manifest.min.json', 'loading manifest', function(contents) {
