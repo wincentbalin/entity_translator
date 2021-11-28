@@ -5,9 +5,14 @@
 
 // Here we end ES5 implementation
 return;
+
+    //
+    // TODO: Check for fetch API, promises, IndexedDB support
+    //
     /*
      * This is manifest data with all metadata.
      */
+    /*
     var manifest = {},
         installed = {},
         settings = new Dexie('et_settings'),
@@ -32,6 +37,7 @@ return;
             /*
             * Large part of this function was taken from https://javascript.info/fetch-progress
             */
+           /*
             let response = await fetch(url);
 
             if (response.status !== 200 && response.status !== 304) {
@@ -251,6 +257,7 @@ return;
     /*
      * Initialisation of the app.
      */
+    /*
 
     // Initialise settings database
     settings.version(1).stores({
@@ -391,6 +398,7 @@ return;
                                 */
 
                                 // Add to Bloom filter
+                                /*
                                 bloomFilter.add(word);
                             });
                         });
@@ -470,5 +478,5 @@ return;
         sourceLanguageElement.value = sourceLanguage;
         fillInstalledTargetLanguages();
         targetLanguageElement.value = targetLanguage;
-    });
+    });*/
 })();
