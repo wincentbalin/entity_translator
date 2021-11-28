@@ -1,7 +1,188 @@
 (function() {
-    //
-    // TODO: Check for fetch API, promises, IndexedDB support
-    //
+    /*
+     * This is manifest data with all metadata.
+     */
+    var manifest;
+
+    /*
+     * These are installed language pairs.
+     */
+    var installedLanguagePairs = {};
+
+    /*
+     * Show progress.
+     */
+    var showProgress = function(title, loaded, total) {
+        var progressTitle = document.querySelector('#progress > h1');
+        var progressBar = document.querySelector('#progress > progress');
+        var progressLabel = document.querySelector('#progress > label');
+
+        progressTitle.textContent = title;
+
+        if (typeof loaded === 'undefined') {  // indeterminate value
+            progressBar.removeAttribute('value');
+            progressLabel.textContent = '';
+        } else {
+            progressBar.value = loaded;
+            progressBar.max = total;
+            progressLabel.textContent = '' + (loaded / total * 100).toFixed() + ' %';
+        }
+
+        window.location.hash = '#progress';
+    }
+
+    /*
+     * Show error.
+     */
+    var showError = function(errorMessage) {
+        document.querySelector('#errorMessage').textContent = errorMessage;
+        window.location.hash = '#error';
+    };
+
+    /*
+     * Load file.
+     */
+    var loadFile = function(url, description, callback) {
+        var request = new XMLHttpRequest();
+        
+        request.onerror = function(event) {
+            showError('Transfer error when ' + description);
+        }
+        request.onprogress = function(event) {
+            if (event.lengthComputable) {
+                showProgress(description, event.loaded, event.total);
+            } else {
+                showProgress(description);
+            }
+        };
+        request.onreadystatechange = function(event) {
+            if (request.readyState === XMLHttpRequest.DONE) {
+                // status == 0 means successful load of a local file in Firefox
+                var status = request.status;
+                if ((status >= 200 && status < 400) || status === 0) {
+                    callback(request.responseText);
+                } else {
+                    showError('Server error when ' + description);
+                }
+            }
+        }
+
+        request.open('GET', url);
+        request.send();
+    };
+
+    /*
+     * No language pairs installed.
+     */
+    var noLanguagePairsInstalled = function() {
+        return Object.keys(installedLanguagePairs).length === 0;
+    };
+
+    /*
+     * Remove child elements.
+     */
+    var removeChildElements = function(parentElement) {
+        while (parentElement.firstChild) {
+            parentElement.removeChild(parentElement.lastChild);
+        }
+    };
+
+    /*
+     * Update element options.
+     */
+    var updateElementOptions = function(parentElement, options) {
+        removeChildElements(parentElement);
+
+        options.forEach(function(option) {
+            var optionElement = document.createElement('option');
+            optionElement.textContent = option;
+            parentElement.appendChild(optionElement);
+        });
+    };
+
+    /*
+     * Compare languages by size in manifest.
+     */
+    var compareBySize = function(language1, language2) {
+        var size1 = language1 in manifest ? manifest[language1].size : 0;
+        var size2 = language2 in manifest ? manifest[language2].size : 0;
+        return size2 - size1;
+    };
+
+    /*
+     * Update languages element in add language screen.
+     */
+    var updateAvailableLanguagesElement = function(element, languages) {
+        switch (document.querySelector('input[name="sortBy"]:checked').value) {
+            case 'alpha': languages.sort();              break;
+            case 'size':  languages.sort(compareBySize); break;
+        }
+        updateElementOptions(element, languages);
+    };
+
+    /*
+     * Update target languages element in add language screen.
+     */
+    var updateAvailableTargetLanguagesElement = function(sourceLanguageElement, targetLanguageElement) {
+        var targetLanguages = Object.keys(manifest[sourceLanguageElement.value].files);
+        updateAvailableLanguagesElement(targetLanguageElement, targetLanguages);
+    }
+
+    /*
+     * Update available languages.
+     */
+    var updateAvailableLanguages = function() {
+        var sourceLanguages = Object.keys(manifest);
+        var sourceLanguageElement = document.querySelector('#availableSourceLanguage');
+        updateAvailableLanguagesElement(sourceLanguageElement, sourceLanguages);
+
+        var targetLanguageElement = document.querySelector('#availableTargetLanguage');
+        updateAvailableTargetLanguagesElement(sourceLanguageElement, targetLanguageElement);
+    };
+
+    /*
+     * Update installed languages.
+     */
+    var updateInstalledLanguages = function() {
+        //
+    };
+
+    /*
+     * This is the entry point.
+     */
+
+    /*
+     * Check for IndexedDB support.
+     */
+    if (!('indexedDB' in window)) {
+        showError('IndexedDB unsupported');
+        return;
+    }
+    
+    /*
+     * Set sort options for available languages.
+     */
+    document.querySelectorAll('input[name="sortBy"]').forEach(function(element) {
+        element.onclick = function(event) {
+            updateAvailableLanguages();
+        };
+    });
+
+    /*
+     * Load manifest.
+     */
+    loadFile('data/manifest.min.json', 'loading manifest', function(contents) {
+        manifest = JSON.parse(contents);
+        updateAvailableLanguages();
+
+        if (noLanguagePairsInstalled()) {
+            window.location.hash = '#addLanguage';
+        } else {
+            window.location.hash = '#search';
+        }
+    });
+
+
 
 // Here we end ES5 implementation
 return;
