@@ -1,5 +1,10 @@
 (function() {
     /*
+     * Data directory, where all the data resides.
+     */
+    var dataDir = 'data/'
+
+    /*
      * This is manifest data with all metadata.
      */
     var manifest;
@@ -179,7 +184,7 @@
     /*
      * Load manifest.
      */
-    loadFile('data/manifest.min.json', 'loading manifest', function(contents) {
+    loadFile(dataDir + 'manifest.min.json', 'loading manifest', function(contents) {
         manifest = JSON.parse(contents);
         updateAvailableLanguages();
 
