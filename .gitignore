@@ -3,3 +3,8 @@ data/
 
 # Ignore server starter for Windows
 server.bat
+
+# Ignore more testing directories
+db/
+out_data/
+
