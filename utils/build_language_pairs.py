@@ -55,7 +55,6 @@ languages = args.languages.split(',')
 logging.debug('Languages: {languages}'.format(languages=languages))
 for language in languages:
     logging.info('Processing {language}'.format(language=language))
-    #other_languages = filter(lambda other: other != language, languages)
     # The direction in Wikipedia tables is backwards, so we must work
     # from the the destination language to source language
     with sqlite3.connect(args.input_dir / '{language}.sqlite'.format(language=language)) as conn:
