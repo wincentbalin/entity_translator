@@ -35,7 +35,8 @@ parser.add_argument('-l', '--languages', help='Languages to search pairs of enti
                     'mdf,lg,atj,srn,xh,gcr,ltg,fj,chr,sm,got,ak,pih,om,tn,'
                     'cu,tw,ts,st,rmy,bm,chy,rn,tum,nqo,ny,ch,ss,mnw,pnt,ady,'
                     'iu,ks,ve,ee,ik,sg,ff,dz,ti,din,cr')
-parser.add_argument('-p', '--max_pair_count', type=int, help='Maximum translation pairs per file', default=100000)
+parser.add_argument('-x', '--max_pair_count', type=int, help='Maximum translation pairs per file', default=100000)
+parser.add_argument('-n', '--min_pair_count', type=int, help='Minimum translation pairs per language', default=10)
 args = parser.parse_args()
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG)
@@ -68,15 +69,17 @@ for language in languages:
         logging.debug('Available translations from: {others}'.format(others=str(other_languages)))
         for other_language in other_languages:
             logging.info('Processing translations from {l1} to {l2}'.format(l1=other_language, l2=language))
+            pair_count, = conn.execute('SELECT COUNT(*) FROM langlinks LEFT JOIN page ON ll_from = page_id '
+                                       'WHERE ll_lang=? AND page_namespace=0', (other_language,)).fetchone()
+            if pair_count < args.min_pair_count:
+                continue
             file_path, file = create_next_translation_file(args.output_dir, other_language, language)
             file_pair_count = 0
             files = [file_path.name]
             logging.debug('Output to {name}'.format(name=file_path.name))
-            pair_count = 0
             for pair in conn.execute('SELECT ll_title, REPLACE(page_title, "_", " ") FROM langlinks LEFT JOIN page '
                                      'ON ll_from = page_id WHERE ll_lang=? AND page_namespace=0', (other_language,)):
                 print('\t'.join(map(str, pair)), file=file)
-                pair_count += 1
                 # Check if new file is needed for new translation pairs
                 file_pair_count += 1
                 if file_pair_count > args.max_pair_count:
