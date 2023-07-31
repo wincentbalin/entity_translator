@@ -43,9 +43,11 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logg
 def create_next_translation_file(output_dir: Path, l1: str, l2: str, file: Optional[TextIO] = None) -> Tuple[Path, TextIO]:
     if file is not None:
         file.close()
+    language_pair_dir = output_dir.joinpath(l1, l2)
+    language_pair_dir.mkdir(0o755, parents=True, exist_ok=True)
     index = 0
     while True:
-        path = output_dir / '{l1}-{l2}-{i}.txt'.format(l1=l1, l2=l2, i=index)
+        path = language_pair_dir / '{l1}-{l2}-{i}.txt'.format(l1=l1, l2=l2, i=index)
         if not path.exists():
             return path, path.open('w', encoding='utf-8')
         index += 1
